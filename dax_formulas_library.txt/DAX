@@ -1,1 +1,38 @@
+// ==============================================================================
+// ENTERPRISE FINANCIAL DASHBOARD EXPRESSION LOGIC (DAX REPOSITORY)
+// ==============================================================================
+
+// 1. Core Financial Metric: Total Invoiced Value
+Total Sales ZAR = 
+SUM('Financial Ledger Data'[Amount_ZAR])
+
+// 2. Advanced Time-Intelligence: Previous Month Ledger Tracking
+Prior Month Value ZAR = 
+CALCULATE(
+    [Total Sales ZAR],
+    DATEADD('Calendar Master'[Date], -1, MONTH)
+)
+
+// 3. Performance Variance Analytics KPI Metric
+Month-over-Month Variance % = 
+VAR CurrentMonth = [Total Sales ZAR]
+VAR LastMonth = [Prior Month Value ZAR]
+RETURN
+IF(
+    ISBLANK(LastMonth) || LastMonth == 0,
+    0,
+    DIVIDE(CurrentMonth - LastMonth, LastMonth)
+)
+
+// 4. Cumulative Rolling Financial Flow Position
+Rolling 12-Month Expenditure = 
+CALCULATE(
+    [Total Sales ZAR],
+    DATESINPERIOD(
+        'Calendar Master'[Date],
+        MAX('Calendar Master'[Date]),
+        -1,
+        YEAR
+    )
+)
 
